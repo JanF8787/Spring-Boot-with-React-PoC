@@ -30,6 +30,7 @@ export default function Home() {
           <li>Node.js</li>
           <li>HTML</li>
           <li>CSS</li>
+          <li>Bootstrap</li>
           <li>Visual Studio Code</li>
         </ul>
 

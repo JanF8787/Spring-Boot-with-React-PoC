@@ -21,8 +21,9 @@ To get started with this project, you will need to have the following installed 
 * React
 * HTML
 * CSS
+* Bootstrap
 
-#### Clone the repository: `git clone https://github.com/JanF8787/ToDoApp.git`
+#### Clone the repository: `git clone https://github.com/JanF8787/ToDoApp-Spring-boot-React.git`
 
 ### Configuration
 
