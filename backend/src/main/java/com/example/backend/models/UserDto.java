@@ -3,6 +3,8 @@ package com.example.backend.models;
 public class UserDto {
 
     private String username;
+
+    private String email;
     private String password;
     private String activationCode;
 
@@ -12,6 +14,14 @@ public class UserDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

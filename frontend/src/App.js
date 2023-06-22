@@ -14,7 +14,6 @@ import './App.css';
 
 function App() {
   const { auth } = useAuth();
-  console.log(auth);
   return (
     <div className='my-container'>
 
@@ -33,8 +32,8 @@ function App() {
           </Routes>
 
         </Router>
-
       </div>
+
     </div>
   );
 }

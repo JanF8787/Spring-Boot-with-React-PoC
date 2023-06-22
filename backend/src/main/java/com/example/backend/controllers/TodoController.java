@@ -32,18 +32,23 @@ public class TodoController {
         return todoService.addTodo(id, todoDto, principal.getName());
     }
 
+    @PatchMapping("/edit/{id}")
+    public ResponseEntity<?> editTodo(@PathVariable Long id, @RequestBody TodoDto todoDto, Principal principal) {
+        return todoService.editTodo(id, todoDto, principal.getName());
+    }
+
     @GetMapping("/{id}/todos")
     public ResponseEntity<?> getTodoList(@PathVariable Long id, Principal principal) {
         return todoService.getTodos(id, principal.getName());
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteTodo(@PathVariable Long id, Principal principal) {
+    public ResponseEntity deleteTodo(@PathVariable Long id, Principal principal) {
         return todoService.deleteTodo(id, principal.getName());
     }
 
     @PatchMapping("/{id}/done")
-    public ResponseEntity isDone(@PathVariable Long id) {
+    public ResponseEntity<?> isDone(@PathVariable Long id) {
         Optional<Todo> todo = todoService.findById(id);
 
         if(!todo.isPresent()) {
@@ -55,7 +60,9 @@ public class TodoController {
 
         todo.get().setDone(true);
         todoService.save(todo.get());
-        return ResponseEntity.ok("isDone");
+
+        TodoDto todoDto = new TodoDto(todo.get().getId(), todo.get().getName(), todo.get().getDone());
+        return ResponseEntity.ok(todoDto);
     }
 
     @PatchMapping("/{id}/not_done")
@@ -71,7 +78,15 @@ public class TodoController {
 
         todo.get().setDone(false);
         todoService.save(todo.get());
-        return ResponseEntity.ok("isNotDone");
+
+        TodoDto todoDto = new TodoDto(todo.get().getId(), todo.get().getName(), todo.get().getDone());
+        return ResponseEntity.ok(todoDto);
     }
+
+    @GetMapping("/{todosNameId}/get_info/{todoId}")
+    public ResponseEntity getInfo(@PathVariable Long todosNameId, @PathVariable Long todoId) {
+        return todoService.getInfo(todosNameId, todoId);
+    }
+
 
 }

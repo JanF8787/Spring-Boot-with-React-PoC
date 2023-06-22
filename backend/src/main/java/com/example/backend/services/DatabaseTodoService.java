@@ -49,10 +49,50 @@ public class DatabaseTodoService implements TodoService{
                     .body(new Responses("permissionError", "You have not rights to do this!"));
         }
 
-        Todo todo = new Todo(null, todoDto.getTodo(), false, todosName.get());
+        if(todoDto.getName().isEmpty()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new Responses("error", "Todo is empty!"));
+        }
+
+        Todo todo = new Todo(null, todoDto.getName(), false, todosName.get());
         todoRepository.save(todo);
 
-        return ResponseEntity.ok(new Responses("success", "Todo was added to the list!"));
+        TodoDto todoDto1 = new TodoDto();
+        todoDto1.setId(todo.getId());
+        todoDto1.setName(todo.getName());
+
+        return ResponseEntity.ok(todoDto1);
+    }
+
+    @Override
+    public ResponseEntity<?> editTodo(Long id, TodoDto todoDto, String username) {
+        Optional<Todo> todo = todoRepository.findById(id);
+        Optional<User> user = userService.findByUsernameOrEmail(username, username);
+
+        if(!todo.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new Responses("notPresent", "Todo with id " +
+                            id + " is not present!"));
+        }
+
+        if (!todo.get().getTodosName().getUser().getUsername().equals(user.get().getUsername())) {
+            return ResponseEntity.badRequest()
+                    .body(new Responses("error", "You don't have permission to do that!"));
+        }
+
+
+        if(todoDto.getName().isEmpty()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new Responses("error", "Todo is empty!"));
+        }
+
+        todo.get().setName(todoDto.getName());
+        todoRepository.save(todo.get());
+
+        return ResponseEntity.ok(todoDto);
     }
 
     @Override
@@ -78,7 +118,7 @@ public class DatabaseTodoService implements TodoService{
         for(Todo todo : todos) {
             TodoDto todoDto = new TodoDto();
             todoDto.setId(todo.getId());
-            todoDto.setTodo(todo.getTodo());
+            todoDto.setName(todo.getName());
             todoDto.setDone(todo.getDone());
 
             todoList.add(todoDto);
@@ -105,6 +145,25 @@ public class DatabaseTodoService implements TodoService{
 
         todoRepository.deleteById(id);
         return ResponseEntity.ok(new Responses("success", "Deleted!"));
+    }
+
+    @Override
+    public ResponseEntity<?> getInfo(Long todosNameId, Long todoId) {
+        Optional<TodosName> todosName = todosNameService.findById(todosNameId);
+        Optional<Todo> todo = todoRepository.findById(todoId);
+
+        if (!todosName.isPresent()) {
+            return ResponseEntity.badRequest()
+                    .body(new Responses("error", "todosname with id " + todosNameId +" is not present!"));
+        }
+
+        if (!todo.isPresent()) {
+            return ResponseEntity.badRequest()
+                    .body(new Responses("error", "todo with id " + todoId +" is not present!"));
+        }
+
+        TodoDto todoDto = new TodoDto(todoId, todo.get().getName(), todo.get().getDone());
+        return ResponseEntity.ok(todoDto);
     }
 
     private Boolean checkData(Optional<User> user, Optional<TodosName> todosName) {

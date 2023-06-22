@@ -9,11 +9,13 @@ import java.util.Optional;
 public interface TodosNameService {
 
     TodosName save(TodosName todo);
-    ResponseEntity<Responses> add(TodosName todosName);
+    ResponseEntity<?> add(TodosName todosName);
+
+    ResponseEntity<?> edit(Long id, TodosNameDto todosNameDto, String username);
 
     Optional<TodosName> findById(Long id);
 
-    List<TodosNameDetails> findAllByUser(User user);
+    List<TodosNameDto> findAllByUser(User user);
 
     ResponseEntity<?> delete(Long id, User user);
 }

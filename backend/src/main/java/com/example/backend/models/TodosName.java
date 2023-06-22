@@ -39,6 +39,10 @@ public class TodosName {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setTodo(String todosName) {
         this.name = todosName;
     }

@@ -16,7 +16,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/user")
 public class UserController {
 
@@ -45,6 +45,7 @@ public class UserController {
         UserDto userDto = new UserDto();
         userDto.setUsername(user.get().getUsername());
         userDto.setActivationCode(user.get().getActivationCode());
+        userDto.setEmail(user.get().getEmail());
         return ResponseEntity.ok(userDto);
     }
 }

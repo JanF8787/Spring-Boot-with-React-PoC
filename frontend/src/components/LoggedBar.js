@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthProvider';
+import '../App.css';
 
 export default function LoggedBar() {
   const token = localStorage.getItem("jwt");
@@ -37,16 +38,16 @@ export default function LoggedBar() {
 
       <div className="container-fluid">
 
-        <div>
+        <div className='myTodos'>
           <Link style={{ marginRight: "10px" }} className="btn btn-outline-info" to="/profile">{name}</Link>
           <Link className="btn btn-outline-info" to="/my_todos">My Todos</Link>
         </div>
 
-        <div style={{ paddingRight: '70px' }}>
+        <div className='todo-app'>
           <Link className="navbar-brand" to="/">Todo App</Link>
         </div>
 
-        <div>
+        <div className='right-side'>
           <Link className="btn btn-danger" onClick={logOut}>Log out</Link>
         </div>
 

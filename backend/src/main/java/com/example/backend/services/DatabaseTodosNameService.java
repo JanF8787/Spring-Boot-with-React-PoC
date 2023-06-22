@@ -27,13 +27,40 @@ public class DatabaseTodosNameService implements TodosNameService {
     }
 
     @Override
-    public ResponseEntity<Responses> add(TodosName todosName) {
+    public ResponseEntity<?> add(TodosName todosName) {
         if(todosName.getName().isEmpty()) {
             return ResponseEntity.badRequest().body(new Responses("error", "Todos name is empty!"));
         }
 
         todoNameRepository.save(todosName);
-        return ResponseEntity.ok(new Responses("succes", "Todos was created!"));
+//        return ResponseEntity.ok(new Responses("succes", "Todos was created!"));
+        return ResponseEntity.ok(new TodosNameDto(todosName.getId(), todosName.getName()));
+    }
+
+    @Override
+    public ResponseEntity<?> edit(Long id, TodosNameDto todosNameDto, String username) {
+        Optional<TodosName> todosName = todoNameRepository.findById(id);
+        Optional<User> user = userService.findByUsernameOrEmail(username, username);
+
+        if (!todosName.isPresent()) {
+            return ResponseEntity.badRequest()
+                    .body(new Responses("error", "todosName with id " + id + " is not present!"));
+        }
+
+        if (!todosName.get().getUser().getUsername().equals(user.get().getUsername())) {
+            return ResponseEntity.badRequest()
+                    .body(new Responses("error", "You don't have permission to do that!"));
+        }
+
+        if (todosNameDto.getName().isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new Responses("error", "todosName is empty!"));
+        }
+
+        todosName.get().setName(todosNameDto.getName());
+        todoNameRepository.save(todosName.get());
+
+        return ResponseEntity.ok(todosNameDto);
     }
 
     @Override
@@ -42,21 +69,21 @@ public class DatabaseTodosNameService implements TodosNameService {
     }
 
     @Override
-    public List<TodosNameDetails> findAllByUser(User user) {
+    public List<TodosNameDto> findAllByUser(User user) {
 
         List<TodosName> myTodosNameByUSer = todoNameRepository.findAllByUser(user);
 
-        List<TodosNameDetails> todosNameDetailsList = new ArrayList<>();
+        List<TodosNameDto> todosNameDtoList = new ArrayList<>();
 
         for(TodosName todo : myTodosNameByUSer) {
-            TodosNameDetails todosNameDetails = new TodosNameDetails();
-            todosNameDetails.setId(todo.getId());
-            todosNameDetails.setName(todo.getName());
+            TodosNameDto todosNameDto = new TodosNameDto();
+            todosNameDto.setId(todo.getId());
+            todosNameDto.setName(todo.getName());
 
-            todosNameDetailsList.add(todosNameDetails);
+            todosNameDtoList.add(todosNameDto);
         }
 
-        return todosNameDetailsList;
+        return todosNameDtoList;
     }
 
     @Override

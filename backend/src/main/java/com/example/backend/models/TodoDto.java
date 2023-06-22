@@ -2,8 +2,17 @@ package com.example.backend.models;
 
 public class TodoDto {
     private Long id;
-    private String todo;
+    private String name;
     private Boolean isDone;
+
+    public TodoDto() {
+    }
+
+    public TodoDto(Long id, String name, Boolean isDone) {
+        this.id = id;
+        this.name = name;
+        this.isDone = isDone;
+    }
 
     public Long getId() {
         return id;
@@ -13,12 +22,12 @@ public class TodoDto {
         this.id = id;
     }
 
-    public String getTodo() {
-        return todo;
+    public String getName() {
+        return name;
     }
 
-    public void setTodo(String todo) {
-        this.todo = todo;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Boolean getDone() {

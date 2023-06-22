@@ -12,8 +12,12 @@ public interface TodoService {
     Todo save (Todo todo);
     ResponseEntity<?> addTodo(Long id, TodoDto todoDto, String username);
 
+    ResponseEntity<?> editTodo(Long id, TodoDto todoDto, String username);
+
     ResponseEntity<?> getTodos(Long id, String username);
 
     ResponseEntity<?> deleteTodo(Long id, String username);
+
+    ResponseEntity<?> getInfo(Long todosNameId, Long todoId);
 
 }

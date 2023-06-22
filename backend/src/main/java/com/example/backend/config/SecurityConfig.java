@@ -34,9 +34,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/register", "/login")
 //                        , "user/my_todos", "user/name", "user/activationCode", "user/getInformation",
-//                        "todos_name/add", "todos_name/delete/**",
+//                        "todos_name/add", "todos_name/delete/**", "todos_name/edit/**",
 //                        "todo/*/todos", "todo/delete/**", "todo/*/add", "todo/*/done", "todo/*/not_done",
-//                         "/activation/**")
+//                         "todo/*/get_info/**", "todo/edit/**", "/activation/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

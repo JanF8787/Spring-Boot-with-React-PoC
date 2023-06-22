@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { add, edit, del } from '../utilities/todoUtility';
 import '../App.css';
 
 export default function MyTodos() {
   const token = localStorage.getItem("jwt");
-  const [todoList, setTodoList] = useState([]);
+
   const [name, setName] = useState("");
+  const [todoList, setTodoList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [isActive, setIsActiv] = useState();
+
+  const [buttonText, setButtonText] = useState("Add");
+  const [editId, setEditId] = useState(-1);
+
+  const addTodoNamePath = "http://localhost:8080/todos_name/add";
+  const editTodoNamePath = `http://localhost:8080/todos_name/edit/${editId}`;
+  const deleteTodoNamPath = "http://localhost:8080/todos_name/delete/";
+
   const navigate = useNavigate();
   let count = 0;
 
@@ -35,53 +45,34 @@ export default function MyTodos() {
 
   const addTodoName = (e) => {
     e.preventDefault();
-    const todo = { name };
-
-    fetch("http://localhost:8080/todos_name/add", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify(todo)
-    })
-      .then(res => {
-        if (res.ok) {
-          res.json()
-            .then(data => setName(data.name));
-          setIsActiv(true);
-          window.location.reload(false);
-        } else if (!res.ok) {
-          res.json()
-            .then(msg => setErrorMessage(msg.message));
-          setIsActiv(false);
-        }
-      })
-      .catch(e => console.log(e));
+    add(addTodoNamePath, editId, token, setTodoList, todoList, setErrorMessage, setName, name, editTodoName);
   }
 
-  const deleteTodo = (id) => {
-    fetch(`http://localhost:8080/todos_name/delete/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-    })
-      .then(res => {
-        if (!res.ok) {
-          res.json()
-            .then(result => console.log(result.message));
-        } else if (res.ok) {
-          console.log("deleted");
-        }
-      })
-      .catch(e => console.log(e));
-    window.location.reload(false);
+  const editTodoName = () => {
+    edit(editId, editTodoNamePath, token, todoList, setTodoList, setEditId, setButtonText, setName, setErrorMessage, name);
   }
 
-  const goToTodo = (id) => {
-    navigate('/todos', { state: { id } });
+  const deleteTodoName = (id) => {
+    del(id, deleteTodoNamPath + id, token, todoList, setTodoList)
+  }
+
+  const editBtn = (id) => {
+    const todoName = todoList.filter(todo => todo.id === id)[0];
+
+    if (todoName) {
+      setEditId(id)
+      setName(todoName.name);
+      setButtonText("Edit");
+    }
+  }
+
+  // useEffect(() => {
+  //   console.log(name);
+  //   console.log(editId);
+  // }, [name, editId]);
+
+  const goToTodo = (id, name) => {
+    navigate('/todos', { state: { id, name } });
   };
 
   return (
@@ -97,15 +88,16 @@ export default function MyTodos() {
                   value={name} onChange={(e) => setName(e.target.value)}
                 />
               </div>
+              {errorMessage ? <span style={{ color: '#be3144', fontSize: '14px' }}><strong>{errorMessage}</strong></span> : ''}
 
               <div className="col-12">
-                <button type="submit" className="btn btn-outline-primary" onClick={addTodoName}>Add</button>
+                <button type="submit" className="btn btn-outline-primary" onClick={addTodoName}>{buttonText}</button>
               </div>
             </form>
           </div>
 
-
-          <table className='table table-striped table-hover'
+          {/* table layout: */}
+          {/* <table className='table table-striped table-hover'
             style={{ marginTop: '40px', width: '55vw', boxShadow: '0px 2px 18px 7px rgba(0,0,0,0.12)' }}>
 
             <thead>
@@ -131,7 +123,28 @@ export default function MyTodos() {
 
             </tbody>
 
-          </table>
+          </table> */}
+
+          {/* grid layout: */}
+          <div className='todos'>
+            {todoList.map(todo => (
+
+              <div className='todo' key={todo.id}>
+
+                <div className='name'>
+                  <h5 style={{ color: "gray" }}>{++count}.</h5>
+                  <h6 style={{ color: "black" }}>{todo.name}</h6>
+                </div>
+
+                <div className='btns'>
+                  <button className='btn btn-outline-primary' style={{ marginRight: '10px' }} onClick={() => goToTodo(todo.id, todo.name)}>View</button>
+                  <button className='btn btn-outline-info' style={{ marginRight: '10px' }} onClick={() => editBtn(todo.id)}>Edit</button>
+                  <button className='btn btn-outline-danger' onClick={() => deleteTodoName(todo.id)}>Delete</button>
+                </div>
+              </div>
+
+            ))}
+          </div>
 
         </> : <h4>{errorMessage}</h4>}
 

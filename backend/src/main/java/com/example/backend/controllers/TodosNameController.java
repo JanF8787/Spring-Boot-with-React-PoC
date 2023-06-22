@@ -2,6 +2,7 @@ package com.example.backend.controllers;
 
 import com.example.backend.models.Responses;
 import com.example.backend.models.TodosName;
+import com.example.backend.models.TodosNameDto;
 import com.example.backend.models.User;
 import com.example.backend.services.TodosNameService;
 import com.example.backend.services.UserService;
@@ -26,7 +27,7 @@ public class TodosNameController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Responses> add(@RequestBody TodosName todosName, Principal principal) {
+    public ResponseEntity<?> add(@RequestBody TodosName todosName, Principal principal) {
         Optional<User> user = userService.findByUsernameOrEmail(principal.getName(), principal.getName());
 
         if(user.get().getActive() == false) {
@@ -35,6 +36,11 @@ public class TodosNameController {
 
         TodosName myTodosName = new TodosName(null, todosName.getName(), user.get());
         return todosNameService.add(myTodosName);
+    }
+
+    @PatchMapping("/edit/{id}")
+    public ResponseEntity editTodosName(@PathVariable Long id, @RequestBody TodosNameDto todosNameDto, Principal principal) {
+        return todosNameService.edit(id, todosNameDto, principal.getName());
     }
 
     @DeleteMapping("/delete/{id}")

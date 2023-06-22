@@ -1,16 +1,16 @@
 package com.example.backend.models;
 
-public class TodosNameDetails {
+public class TodosNameDto {
 
     Long id;
     String name;
 
-    public TodosNameDetails(Long id, String name) {
+    public TodosNameDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public TodosNameDetails() {
+    public TodosNameDto() {
     }
 
     public Long getId() {

@@ -9,7 +9,7 @@ form {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 40vw;
+  width: 30vw;
   padding: 40px;
   transform: translate(-50%, -50%);
   background: rgba(0, 0, 0, .5);
@@ -31,7 +31,7 @@ form {
 
 .user-box {
   margin-top: 20px;
-  width: 350px;
+  width: 300px;
 }
 
 .login-box .user-box input {
@@ -171,5 +171,19 @@ button {
   }
   50%,100%{
     bottom: 100%;
+  }
+}
+
+@media (max-width: 1050px) {
+  .user-box {
+    margin-top: 20px;
+    width: 200px;
+  }
+}
+
+@media (max-width: 780px) {
+  .login-box {
+    width: 50vw;
+    padding: 10px;
   }
 }

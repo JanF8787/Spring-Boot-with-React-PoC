@@ -1,12 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { add, edit, del } from '../utilities/todoUtility';
 
 export default function Todos() {
   const token = localStorage.getItem("jwt");
+
   const [todo, setTodo] = useState("");
   const [listOfTodos, setListOfTodos] = useState([]);
+
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [buttonText, setButtonText] = useState("Add");
+  const [editId, setEditId] = useState(-1);
+
   const location = useLocation();
-  let { id } = location.state;
+
+  let { id, name } = location.state;
+
+  const addTodoPath = `http://localhost:8080/todo/${id}/add`;
+  const editTodoPath = `http://localhost:8080/todo/edit/${editId}`;
+  const deleteTodoPath = "http://localhost:8080/todo/delete/";
+
   let count = 0;
 
   useEffect(() => {
@@ -20,35 +34,40 @@ export default function Todos() {
       .then(res => {
         if (res.ok) {
           res.json()
-            .then(todo => { setListOfTodos(todo) });
+            .then(result => {
+              setListOfTodos(result)
+            });
         }
       });
   }, [id, token]);
 
   const addTodo = (e) => {
     e.preventDefault();
-    const myTodo = { todo };
-
-    fetch(`http://localhost:8080/todo/${id}/add`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify(myTodo)
-    })
-      .then(res => {
-        if (res.ok) {
-          res.json()
-            .then(data => setTodo(data.todo));
-          window.location.reload(false);
-        } else if (!res.ok) {
-          res.json()
-            .then(msg => console.log(msg.message));
-        }
-      })
-      .catch(e => console.log(e));
+    add(addTodoPath, editId, token, setListOfTodos, listOfTodos, setErrorMessage, setTodo, todo, editTodo);
   }
+
+  const editTodo = () => {
+    edit(editId, editTodoPath, token, listOfTodos, setListOfTodos, setEditId, setButtonText, setTodo, setErrorMessage, todo);
+  }
+
+  const deleteTodo = (todoId) => {
+    del(todoId, deleteTodoPath + todoId, token, listOfTodos, setListOfTodos);
+  }
+
+  const editBtn = (todoId) => {
+    const myTodo = listOfTodos.filter(item => item.id === todoId)[0];
+
+    if (myTodo) {
+      setTodo(myTodo.name);
+      setButtonText("Edit");
+      setEditId(todoId);
+    }
+  }
+
+  //for showing id of item was clicked to edit
+  // useEffect(() => {
+  //   console.log(editId);
+  // }, [editId]);
 
   const todoIsDone = (todoId) => {
     fetch(`http://localhost:8080/todo/${todoId}/done`, {
@@ -60,7 +79,13 @@ export default function Todos() {
     })
       .then(res => {
         if (res.ok) {
-          window.location.reload(false);
+          const updateTodos = listOfTodos.map(todo => {
+            if (todo.id === todoId) {
+              todo.done = true;
+            }
+            return todo;
+          });
+          setListOfTodos(updateTodos);
         }
       })
       .catch(e => console.log(e));
@@ -76,33 +101,22 @@ export default function Todos() {
     })
       .then(res => {
         if (res.ok) {
-          window.location.reload(false);
+          const updateTodos = listOfTodos.map(todo => {
+            if (todo.id === todoId) {
+              todo.done = false;
+            }
+            return todo;
+          });
+          setListOfTodos(updateTodos);
         }
       })
       .catch(e => console.log(e));
   }
 
-  const deleteTodo = (todoId) => {
-    fetch(`http://localhost:8080/todo/delete/${todoId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-    })
-      .then(res => {
-        if (!res.ok) {
-          res.json()
-            .then(result => console.console.log(result.message));
-        } else if (res.ok) {
-          console.log(id + " deleted");
-          window.location.reload(false);
-        }
-      })
-  }
-
   return (
     <div className='my-todos'>
+
+      <h5 style={{ marginTop: "30px", color: "green" }}> "{name}" </h5>
 
       <div style={{ marginTop: '20px' }}>
         <form className="row row-cols-lg-auto g-3 align-items-center">
@@ -112,8 +126,10 @@ export default function Todos() {
             />
           </div>
 
+          {errorMessage ? <span style={{ color: '#be3144', fontSize: '14px' }}><strong>{errorMessage}</strong></span> : ''}
+
           <div className="col-12" style={{ display: 'flex', justifyContent: 'center' }}>
-            <button type="submit" className="btn btn-outline-primary" onClick={addTodo}>Add</button>
+            <button type="submit" className="btn btn-outline-primary" onClick={addTodo}>{buttonText}</button>
           </div>
         </form>
       </div>
@@ -128,7 +144,7 @@ export default function Todos() {
             {listOfTodos.map(todo => (
               <tr className='table-light' key={todo.id}>
                 <th scope='row'>{++count}</th>
-                <td>{todo.todo}</td>
+                <td>{todo.name}</td>
                 <td>
                   <div style={{ display: 'flex', justifyContent: 'end' }}>
 
@@ -136,6 +152,7 @@ export default function Todos() {
                       <button className='btn btn-outline-success' onClick={() => todoIsDone(todo.id)}>Done</button>
                     }
 
+                    <button className='btn btn-outline-info' style={{ marginLeft: '10px' }} onClick={() => editBtn(todo.id)}>Edit</button>
                     <button className='btn btn-outline-danger' style={{ marginLeft: '10px' }} onClick={() => deleteTodo(todo.id)}>Delete</button>
                   </div>
                 </td>
