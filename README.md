@@ -1,5 +1,7 @@
 ## ToDoApp
 
+#### Clone the repository: `git clone https://github.com/JanF8787/Spring-Boot-with-React-PoC.git`
+
 To get started with this project, you will need to have the following installed on your local machine:
 
 * JDK 17+
@@ -23,7 +25,9 @@ To get started with this project, you will need to have the following installed 
 * CSS
 * Bootstrap
 
-#### Clone the repository: `git clone https://github.com/JanF8787/ToDoApp-Spring-boot-React.git`
+### Another
+
+* Docker ( To Dokerize the app: `docker-compose up -d` within root folder )
 
 ### Configuration
 
